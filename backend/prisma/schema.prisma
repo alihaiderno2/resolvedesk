@@ -1,0 +1,113 @@
+// STREAMING_CHUNK:Configuring the database provider...
+generator client {
+provider = "prisma-client-js"
+}
+
+datasource db {
+provider = "postgresql"
+}
+
+// STREAMING_CHUNK:Defining the Organization (Multi-Tenant Core)...
+model Organization {
+id        String   @id @default(uuid())
+name      String
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+
+// Relationships: Everything belongs to an Organization
+users     User[]
+tickets   Ticket[]
+customers Customer[]
+}
+
+// STREAMING_CHUNK:Defining internal Users (Human Agents & Admins)...
+enum Role {
+ADMIN
+AGENT
+}
+
+model User {
+id             String       @id @default(uuid())
+email          String       @unique
+passwordHash   String
+role           Role         @default(AGENT)
+
+// The crucial multi-tenant link
+organizationId String
+organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+// Tickets assigned to this specific agent
+assignedTickets Ticket[]
+
+createdAt      DateTime     @default(now())
+updatedAt      DateTime     @updatedAt
+}
+
+// STREAMING_CHUNK:Defining Customers (The people submitting tickets)...
+model Customer {
+id             String       @id @default(uuid())
+email          String
+name           String?
+
+// Customers are scoped to an organization (Shoe Co. customers != Tech Co. customers)
+organizationId String
+organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+tickets        Ticket[]
+
+createdAt      DateTime     @default(now())
+
+// A customer email is only unique WITHIN a specific organization
+@@unique([email, organizationId])
+}
+
+// STREAMING_CHUNK:Defining the Tickets...
+enum TicketStatus {
+OPEN
+PENDING     // Waiting on customer reply
+ESCALATED   // AI flagged as angry / high priority
+RESOLVED
+}
+
+model Ticket {
+id             String       @id @default(uuid())
+subject        String
+status         TicketStatus @default(OPEN)
+
+// Relations
+organizationId String
+organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+customerId     String
+customer       Customer     @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+// Optional: A ticket might not be assigned to an agent yet
+assignedToId   String?
+assignedTo     User?        @relation(fields: [assignedToId], references: [id])
+
+messages       Message[]
+
+createdAt      DateTime     @default(now())
+updatedAt      DateTime     @updatedAt
+}
+
+// STREAMING_CHUNK:Defining Messages and AI Drafts...
+enum SenderType {
+CUSTOMER
+AGENT
+AI
+}
+
+model Message {
+id             String     @id @default(uuid())
+content        String     @db.Text
+senderType     SenderType
+
+// Is this a private note? (Used when the AI drafts a reply or leaves a "No docs found" note)
+isInternalNote Boolean    @default(false)
+
+ticketId       String
+ticket         Ticket     @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+createdAt      DateTime   @default(now())
+}
