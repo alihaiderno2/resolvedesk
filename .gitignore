@@ -1,0 +1,48 @@
+# ResolveDesk Root GitIgnore
+
+# 1. Dependency Directories
+node_modules/
+**/node_modules/
+
+# 2. Environment Variables & Secrets
+.env
+.env.*
+!.env.example
+**/.*env
+**/.*env.*
+
+# 3. Build & Output Directories
+dist/
+build/
+.next/
+out/
+
+# 4. Logs and Diagnostic Files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+
+# 5. Operating System Junk
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# 6. IDEs and Editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# 7. Prisma Specifics
+# We want to commit schema.prisma and prisma.config.ts, 
+# but if you ever use SQLite for local quick testing, ignore the DB file.
+*.db
+*.db-journal
