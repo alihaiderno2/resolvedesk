@@ -28,7 +28,7 @@ export async function registerAdmin(name: string, email:string, password: string
     });
     
     if(existingUser){
-        throw new Error("User with this email already exists");
+        throw new Error("Invalid credentials");
     }
     const hashedPassword = await hashPassword(password);
     const result = await prisma.$transaction( async (transactionClient) => {
@@ -51,4 +51,21 @@ export async function registerAdmin(name: string, email:string, password: string
     });
     return result;
 }
+export async function loginUser(email: string, password: string): Promise<any> {
+    const user = await prisma.user.findUnique({
+        where:{
+            email: email,
+        }
+    })
+    if(!user){
+        throw new Error("Invalid credentials");
+    }
 
+    const isPasswordValid = await comparePassword(password, user.passwordHash);
+    if(!isPasswordValid){
+        throw new Error("Invalid credentials");
+    }
+
+    const { passwordHash: _, ...safeUser } = user;
+    return { user: safeUser };
+}
