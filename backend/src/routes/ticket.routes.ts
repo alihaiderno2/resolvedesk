@@ -4,3 +4,5 @@ import { authMiddleware } from "../middlewares/auth.middleware";
 
 const router = Router();
 router.post("/", authMiddleware,createTicketController);
+
+export default router;

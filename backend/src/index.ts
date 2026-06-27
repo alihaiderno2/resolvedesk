@@ -3,6 +3,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import authRoutes from "./routes/auth.routes";
+import ticketRoutes from "./routes/ticket.routes";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(express.json());
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 const PORT = process.env.PORT || 3000;
 

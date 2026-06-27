@@ -1,7 +1,7 @@
 import { PrismaClient, Role,SenderType } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
-import bcrypt from "bcrypt";
+
 // Setting standard Prisma connection pool
 const connectionString = `${process.env.DATABASE_URL}`;
 const pool = new Pool({connectionString});

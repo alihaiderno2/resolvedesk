@@ -9,6 +9,8 @@ export const createTicketController = async (req: Request, res: Response) => {
         if(!subject || !customerEmail || !customerName || !initialMessage){
             return res.status(400).json({message: "Missing required fields"});
         }
+        console.log("AUDIT - Token Payload:", req.user);
+        console.log("AUDIT - Extracted Org ID:", organizationId);
         const result = await createTicket(subject, customerEmail, customerName, initialMessage, organizationId);
         return res.status(201).json({
             message: "Ticket created successfully",

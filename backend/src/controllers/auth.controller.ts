@@ -10,8 +10,8 @@ export const registerAdminController = async (req: Request, res: Response) => {
             return res.status(400).json({message: "Missing required fields"});
         }
 
-        const token = generateToken(name, role, organizationName);
         const result = await registerAdmin(name, email, password, role, organizationName);
+        const token = generateToken(name, role, result.organization.id);
         res.status(201).json({
             token: token,
             message: "Admin registered successfully",
