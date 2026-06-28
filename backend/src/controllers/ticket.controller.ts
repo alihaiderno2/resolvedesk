@@ -1,5 +1,5 @@
 import {Request, Response} from 'express';
-import {createTicket} from '../services/ticket.service';
+import {createTicket,getAllTickets,getTicketById} from '../services/ticket.service';
 
 export const createTicketController = async (req: Request, res: Response) => {
     try{
@@ -18,6 +18,41 @@ export const createTicketController = async (req: Request, res: Response) => {
         });
     }
     catch (error) {
+        console.error(error);
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
+}
+export const getAllTicketsController = async (req: Request, res: Response) => {
+    try{
+        const organizationId = req.user!.organizationId;
+        const tickets = await getAllTickets(organizationId);
+        return res.status(200).json({
+            message: "Tickets fetched successfully",
+            data: tickets,
+        });
+    }catch (error) {
+        console.error(error);
+        if (error instanceof Error) {
+            return res.status(500).json({ message: error.message });
+        }
+    }
+}
+export const getTicketByIdController = async (req: Request, res: Response) => {
+    try{
+        const ticketId = req.params.ticketId as string;
+        const organizationId = req.user!.organizationId;
+        
+        const result = await getTicketById(ticketId, organizationId);
+        if(!result){
+            return res.status(404).json({message: "Ticket not found"});
+        }
+        return res.status(200).json({
+            message: "Ticket fetched successfully",
+            data: result,
+        });
+    }catch (error) {
         console.error(error);
         if (error instanceof Error) {
             return res.status(500).json({ message: error.message });

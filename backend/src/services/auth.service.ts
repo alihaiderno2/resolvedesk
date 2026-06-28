@@ -1,16 +1,6 @@
-import { PrismaClient, Role } from '@prisma/client';
-import { Pool } from 'pg';
-import { PrismaPg } from '@prisma/adapter-pg';
+import { Role } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import bcrypt from "bcrypt";
-
-// Setting standard Prisma connection pool
-const connectionString = `${process.env.DATABASE_URL}`;
-const pool = new Pool({connectionString});
-
-// using prisma adapter for PostgreSQL
-const adapter = new PrismaPg(pool);
-
-const prisma = new PrismaClient({adapter});
 
 // To hash a password
 function hashPassword(password: string): Promise<string>{
