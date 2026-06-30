@@ -47,5 +47,5 @@ export const loginUserController = async (req: Request, res: Response) => {
 }
 export const generateToken = (userId: string, role: string, organizationId : string): string =>  {
     const secret = process.env.JWT_SECRET || "default_secret";
-    return jwt.sign({userId, role, organizationId}, secret, {expiresIn: '1h'});
+    return jwt.sign({userId, role, organizationId}, secret, {expiresIn: '24h'});
 }
